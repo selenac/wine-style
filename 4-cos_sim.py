@@ -7,7 +7,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
-filename = '../eda/train_sample.csv'
 
 def load_data(filename):
     '''
@@ -29,7 +28,8 @@ def create_wine_stop(df):
     return wine stop words to use in vectorizing
     '''
     # working list of stop words
-    wine_stop_lib = ['aromas', 'drink', 'fruit', 'palate','wine', 'like', 'bit']
+    wine_stop_lib = ['aromas', 'drink', 'fruit', 'palate','wine', 'like', 'bit',
+                     'flavor', 'fine', 'sense', 'note', 'notes', 'frame']
     return stopwords.words('english') + wine_stop_lib + create_variety_list(df)
 
 def get_tfidf_vect(df):
@@ -53,52 +53,47 @@ def cosine_sim_matrix(df):
     cosine_similiarity = linear_kernel(tfidf, tfidf)
     return cosine_similiarity
 
+def top_n_sim(cs, item_id, n=5):
+    '''
+    input:
+        cosine_similarity matrix (np)
+        item_id: wine id
+        n: number of similar wines
+    output:
+        w_list: list of n tuples (wine_ids similar to item_id, similarity score)
+    '''
+    output = []
+    arr = cs[item_id].argsort()[-(n+1):][::-1]
+    arr = arr[1:] #drop 1st element (always equal to item_id)
+    for a in arr:
+        output.append((a, cs[item_id][a]))
+    return output
+
 ######################################
-wine = load_data(filename)
-cs = cosine_sim_matrix(wine)
 
-tfidf = transform_vect(wine)
-tfidf
+if __name__ == '__main__':
 
-cs.shape
+    filename = '../eda/train_sample.csv'
+    wine = load_data(filename)
+    cs = cosine_sim_matrix(wine)
 
-fifty = wine['variety'][0:50]
+    sim_wines = top_n_sim(cs, 0)
+    
+    # cs.shape
+    #
+    # twenty5 = wine['variety'][0:25]
+    # for i , doc1 in enumerate(twenty5):
+    #     for j, doc2 in enumerate(twenty5):
+    #         if i != j and cs[i,j] > 0.25:
+    #             print i, doc1, j, doc2, cs[i, j]
+    #
 
-for i , doc1 in enumerate(fifty):
-    for j, doc2 in enumerate(fifty):
-        if i != j and cs[i,j] > 0.25:
-            print i, doc1, j, doc2, cs[i, j]
 
 
 ######################################
-stop = stopwords.words('english')
-wine_stop_words = set(stop + ['aromas', 'cabernet', 'drink', 'fruit', 'palate', 'pinot',
-                    'sauvignon', 'wine', 'like', 'bit', 'chardonnay'])
 
-vect = TfidfVectorizer(stop_words = wine_stop_words,
-                       decode_error = 'ignore',
-                       strip_accents = 'unicode',
-                       max_df = 0.97,
-                       min_df = 0.03,
-                       ngram_range = (1,2),
-                       lowercase = True)
-
-desc_vectors = vect.fit_transform(wine['description'])
-desc_vectors.shape
-vect.get_feature_names()
-
-print desc_vectors[20]
-
-cosine_similarities = linear_kernel(desc_vectors[0:1], desc_vectors).flatten()
-related_docs_indices = cosine_similarities.argsort()[:-10:-1]
-related_docs_indices
-cosine_similarities[related_docs_indices]
-wine.info()
-for i in related_docs_indices:
-    print wine['description'][i], wine['variety'][i], wine['country'][i], wine['winery'][i]
-
-
-wine.values[0]
+'''
+Code for comparing descriptions if the user puts in a description
 
 def comp_description(query, results_number=20):
         results=[]
@@ -122,3 +117,4 @@ def comp_description(query, results_number=20):
 
 
 comp_description('A semi-dry white wine with pear, citrus, and tropical fruit flavors; crisp and refreshing.')
+'''
