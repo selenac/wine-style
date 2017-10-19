@@ -53,6 +53,11 @@ def cosine_sim_matrix(df):
     cosine_similiarity = linear_kernel(tfidf, tfidf)
     return cosine_similiarity
 
+def pred_one(cs, item_id):
+    arr = cs[item_id].argsort()[-2:][::-1]
+    arr = arr[1:]
+    return (arr[0], cs[item_id][arr[0]])
+
 def top_n_sim(cs, item_id, n=5):
     '''
     input:
@@ -76,8 +81,9 @@ if __name__ == '__main__':
     filename = '../eda/train_sample.csv'
     wine = load_data(filename)
     cs = cosine_sim_matrix(wine)
-
     sim_wines = top_n_sim(cs, 0)
+    top_wine = pred_one(cs, 0)
+
     
     # cs.shape
     #
