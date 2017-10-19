@@ -5,7 +5,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 # Loading Data into a dataframe
@@ -48,10 +48,10 @@ def create_wine_stop(df):
 # Tokenizing stratgeies.
 # TODO figure out the ascii errors!!
 
-# def lemmatize_descriptions(descriptions):
-#     l = WordNetLemmatizer()
-#     lemmatize = lambda d: " ".join(l.lemmatize(w) for w in d.split())
-#     return [lemmatize(desc) for desc in descriptions]
+def lemmatize_descriptions(descriptions):
+    l = WordNetLemmatizer()
+    lemmatize = lambda d: " ".join(l.lemmatize(w) for w in d.split())
+    return [lemmatize(desc.decode(errors='ignore')) for desc in descriptions]
 
 # Vectorizers
 
@@ -74,11 +74,34 @@ def transform_vect(df, lem=False):
     tfidf = v.fit_transform(desc)
     return tfidf
 
+# def get_count_vect(df):
+#     wine_stop_words = create_wine_stop(df)
+#     vectorizer = CountVectorizer(stop_words = wine_stop_words,
+#                                 decode_error = 'ignore',
+#                                 strip_accents = 'unicode',
+#                                 # max_df = 0.97,
+#                                 # min_df = 0.03,
+#                                 # ngram_range = (1,2),
+#                                 lowercase = True)
+#     return vectorizer
+#
+# def transform_countvect(df, lem=False):
+#     v = get_count_vect(df)
+#     desc = df['description']
+#     if lem:
+#         desc = lemmatize_descriptions(desc)
+#     cv = v.fit_transform(desc)
+#     return cv
+
 # Similarity Comparisons
 
-def cosine_sim_matrix(df, lem=False):
-    tfidf = transform_vect(df, lem)
-    cosine_similiarity = linear_kernel(tfidf, tfidf)
+def cosine_sim_matrix(df, tf=True, lem=False):
+    if tf:
+        tfidf = transform_vect(df, lem)
+        cosine_similiarity = linear_kernel(tfidf, tfidf)
+    else:
+        cv = transform_countvect(df, lem)
+        cosine_similiarity = linear_kernel(cv, cv)
     return cosine_similiarity
 
 # Recommendations
@@ -119,7 +142,7 @@ def return_recs_df(df, cs, item_id, n=5):
     recommendation = []
     rec_ids = top_n_sim(cs, item_id, n)
     for rec_id in rec_ids:
-        recommendation.append(df[rec_id])
+        recommendation.append(df.values[rec_id[0]])
     return recommendation
 
 ######################################
@@ -129,8 +152,13 @@ if __name__ == '__main__':
     filename = '../eda/train_sample.csv'
     wine = load_data(filename)
     wine = create_product_name(wine)
-    cs = cosine_sim_matrix(df=wine, lem=False)
-    # sim_wines = top_n_sim(cs, 1)
+    cs = cosine_sim_matrix(df=wine, tf=True, lem=True)
+    sim_wines = top_n_sim(cs, 1)
+    print sim_wines
+    print
+    # cvcs = cosine_sim_matrix(df=wine, tf=False, lem=False)
+    # sim_wines = top_n_sim(cvcs, 1)
+    # print sim_wines
     # top_wine = pred_one(cs, 1)
 
     # cs.shape
