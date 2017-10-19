@@ -3,10 +3,12 @@ import pandas as pd
 import nltk
 
 from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
+# Loading Data into a dataframe
 
 def load_data(filename):
     '''
@@ -15,6 +17,17 @@ def load_data(filename):
     '''
     df = pd.read_csv(filename)
     return df
+
+# Update dataframe with product name column for identification
+
+def create_product_name(df):
+    '''
+    create wine product column with name
+    '''
+    df['product'] = df['winery'] + ' ' + df['designation'].fillna('') + ' ' + df['variety']
+    return df
+
+# Additional stop words generated related to wine
 
 def create_variety_list(df):
     '''
@@ -32,6 +45,16 @@ def create_wine_stop(df):
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame']
     return stopwords.words('english') + wine_stop_lib + create_variety_list(df)
 
+# Tokenizing stratgeies.
+# TODO figure out the ascii errors!!
+
+# def lemmatize_descriptions(descriptions):
+#     l = WordNetLemmatizer()
+#     lemmatize = lambda d: " ".join(l.lemmatize(w) for w in d.split())
+#     return [lemmatize(desc) for desc in descriptions]
+
+# Vectorizers
+
 def get_tfidf_vect(df):
     wine_stop_words = create_wine_stop(df)
     vectorizer = TfidfVectorizer(stop_words = wine_stop_words,
@@ -43,15 +66,22 @@ def get_tfidf_vect(df):
                                 lowercase = True)
     return vectorizer
 
-def transform_vect(df):
+def transform_vect(df, lem=False):
     v = get_tfidf_vect(df)
-    tfidf = v.fit_transform(df['description'])
+    desc = df['description']
+    if lem:
+        desc = lemmatize_descriptions(desc)
+    tfidf = v.fit_transform(desc)
     return tfidf
 
-def cosine_sim_matrix(df):
-    tfidf = transform_vect(df)
+# Similarity Comparisons
+
+def cosine_sim_matrix(df, lem=False):
+    tfidf = transform_vect(df, lem)
     cosine_similiarity = linear_kernel(tfidf, tfidf)
     return cosine_similiarity
+
+# Recommendations
 
 def pred_one(cs, item_id):
     arr = cs[item_id].argsort()[-2:][::-1]
@@ -74,17 +104,35 @@ def top_n_sim(cs, item_id, n=5):
         output.append((a, cs[item_id][a]))
     return output
 
+def return_recs_name(df, cs, item_id, n=5):
+    '''
+    '''
+    recommendation = []
+    rec_ids = top_n_sim(cs, item_id, n)
+    for rec_id in rec_ids:
+        recommendation.append(df['product'][rec_id[0]])
+    return recommendation
+
+def return_recs_df(df, cs, item_id, n=5):
+    '''
+    '''
+    recommendation = []
+    rec_ids = top_n_sim(cs, item_id, n)
+    for rec_id in rec_ids:
+        recommendation.append(df[rec_id])
+    return recommendation
+
 ######################################
 
 if __name__ == '__main__':
 
     filename = '../eda/train_sample.csv'
     wine = load_data(filename)
-    cs = cosine_sim_matrix(wine)
-    sim_wines = top_n_sim(cs, 0)
-    top_wine = pred_one(cs, 0)
+    wine = create_product_name(wine)
+    cs = cosine_sim_matrix(df=wine, lem=False)
+    # sim_wines = top_n_sim(cs, 1)
+    # top_wine = pred_one(cs, 1)
 
-    
     # cs.shape
     #
     # twenty5 = wine['variety'][0:25]
