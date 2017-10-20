@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
-import nltk
 
+import nltk
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
+
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -74,7 +75,13 @@ def transform_vect(df, lem=False):
     if lem:
         desc = lemmatize_descriptions(desc)
     tfidf = v.fit_transform(desc)
-    return tfidf
+    return v, tfidf
+
+def get_top_features(vectorizer, n=5):
+    indices = np.argsort(vectorizer.idf_)[::-1]
+    features = vectorizer.get_feature_names()
+    return [features[i] for i in indices[:n]]
+
 
 # def get_count_vect(df):
 #     wine_stop_words = create_wine_stop(df)
@@ -99,12 +106,14 @@ def transform_vect(df, lem=False):
 
 def cosine_sim_matrix(df, tf=True, lem=False):
     if tf:
-        tfidf = transform_vect(df, lem)
+        v, tfidf = transform_vect(df, lem)
         cosine_similiarity = linear_kernel(tfidf, tfidf)
+        top_features = get_top_features(v, 100)
     else:
         cv = transform_countvect(df, lem)
         cosine_similiarity = linear_kernel(cv, cv)
-    return cosine_similiarity
+        top_features = None
+    return cosine_similiarity, top_features
 
 ''' Recommendations'''
 
@@ -163,13 +172,15 @@ def rec_comparison_csv(df, n=5):
         for i in xrange(len(sim_wines)):
             score = sim_wines[i][1]
             rec_wine_id = sim_wines[i][0]
-            info.append([wine_id, df['product'][wine_id], 'reg', i+1,
-            score, rec_wine_id, df['product'][rec_wine_id]])
+            info.append([wine_id, df['product'][wine_id],
+                        'reg', i+1, score,
+                        rec_wine_id, df['product'][rec_wine_id]])
         for i in xrange(len(l_sim_wines)):
             score = l_sim_wines[i][1]
             rec_wine_id = l_sim_wines[i][0]
-            info.append([wine_id, df['product'][wine_id],'lem', i+1,
-            score, rec_wine_id, df['product'][rec_wine_id]])
+            info.append([wine_id, df['product'][wine_id],
+                        'lem', i+1, score,
+                        rec_wine_id, df['product'][rec_wine_id]])
 
     comp_df = pd.DataFrame(info, columns=columns)
     comp_df.to_csv('../csv/rec_comparison.csv')
@@ -182,14 +193,18 @@ if __name__ == '__main__':
     filename = '../csv/sample.csv'
     wine = load_data(filename)
     wine = create_product_name(wine)
-    rec_comparison_csv(wine)
-
+    #rec_comparison_csv(wine)
+    cs, top_feats = cosine_sim_matrix(df=wine, tf=True, lem=False)
+    print wine.values[10]
+    print top_feats
     #Regular tokenizing
     #cs = cosine_sim_matrix(df=wine, tf=True, lem=False)
     #Lemmatize the descriptions
     #csl = cosine_sim_matrix(df=wine, tf=True, lem=True)
 
-    # Test recommendations
+    '''
+    Script for quick check on recommendations
+    '''
     # check_wine_id = 28
     # sim_wines = top_n_sim(cs, check_wine_id)
     # l_sim_wines = top_n_sim(csl, check_wine_id)
@@ -202,25 +217,6 @@ if __name__ == '__main__':
     # print return_recs_df(wine, cs, check_wine_id)
     # print
     # print return_recs_df(wine, csl, check_wine_id)
-
-#TODO get top features from each tokenized description
-
-
-
-    # cvcs = cosine_sim_matrix(df=wine, tf=False, lem=False)
-    # sim_wines = top_n_sim(cvcs, 1)
-    # print sim_wines
-    # top_wine = pred_one(cs, 1)
-
-    # cs.shape
-    #
-    # twenty5 = wine['variety'][0:25]
-    # for i , doc1 in enumerate(twenty5):
-    #     for j, doc2 in enumerate(twenty5):
-    #         if i != j and cs[i,j] > 0.25:
-    #             print i, doc1, j, doc2, cs[i, j]
-    #
-
 
 
 ######################################
