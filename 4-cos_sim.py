@@ -4,6 +4,8 @@ import pandas as pd
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
+from nltk.stem.snowball import SnowballStemmer
 
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -43,7 +45,8 @@ def create_wine_stop(df):
     '''
     # working list of stop words
     wine_stop_lib = ['aromas', 'drink', 'fruit', 'palate','wine', 'like', 'bit',
-                     'flavor', 'fine', 'sense', 'note', 'notes', 'frame']
+                     'flavor', 'fine', 'sense', 'note', 'notes', 'frame', 'alcohol',
+                     'yet', 'seem']
     return stopwords.words('english') + wine_stop_lib + create_variety_list(df)
 
 ''' Tokenizers '''
@@ -53,8 +56,15 @@ def lemmatize_descriptions(descriptions):
     lemmatize = lambda d: " ".join(l.lemmatize(w) for w in d.split())
     return [lemmatize(desc.decode(errors='ignore')) for desc in descriptions]
 
+def porter_stem_descriptions(descriptions):
+    p = PorterStemmer()
+    porter = lambda d: " ".join(p.stem(w) for w in d.split())
+    return [porter(desc.decode(errors='ignore')) for desc in descriptions]
+
 def snowball_stem_descriptions(descriptions):
-    pass
+    s = SnowballStemmer('english')
+    stemmer = lambda d: " ".join(s.stem(w) for w in d.split())
+    return [stemmer(desc.decode(errors='ignore')) for desc in descriptions]
 
 ''' Vectorizers '''
 
@@ -69,11 +79,22 @@ def get_tfidf_vect(df):
                                 lowercase = True)
     return vectorizer
 
-def transform_vect(df, lem=False):
+def transform_vect(df, stemlem=0):
+    '''
+    input:
+        dataframe
+        stemlem: int (0s) None, (1) Lemmatize, (2) Porter, (3) Snowball
+    output:
+        vectorizer and tfidf np array
+    '''
     v = get_tfidf_vect(df)
     desc = df['description']
-    if lem:
+    if stemlem==1:
         desc = lemmatize_descriptions(desc)
+    elif stemlem==2:
+        desc = porter_stem_descriptions(desc)
+    elif stemlem==3:
+        desc = snowball_stem_descriptions(desc)
     tfidf = v.fit_transform(desc)
     return v, tfidf
 
@@ -104,13 +125,13 @@ def get_top_features(vectorizer, n=5):
 
 ''' Similarity Comparisons '''
 
-def cosine_sim_matrix(df, tf=True, lem=False):
+def cosine_sim_matrix(df, tf=True, stemlem=0):
     if tf:
-        v, tfidf = transform_vect(df, lem)
+        v, tfidf = transform_vect(df, stemlem)
         cosine_similiarity = linear_kernel(tfidf, tfidf)
-        top_features = get_top_features(v, 100)
+        top_features = get_top_features(v, 10)
     else:
-        cv = transform_countvect(df, lem)
+        cv = transform_countvect(df, stemlem)
         cosine_similiarity = linear_kernel(cv, cv)
         top_features = None
     return cosine_similiarity, top_features
@@ -156,6 +177,48 @@ def return_recs_df(df, cs, item_id, n=5):
         recommendation.append(df.values[rec_id[0]])
     return recommendation
 
+def quick_comp(wine, cs1, cs2, wine_id):
+    '''
+    Script for quick check on recommendations
+    '''
+    sim_wines = top_n_sim(cs1, wine_id)
+    sim_wines2 = top_n_sim(cs2, wine_id)
+    print 'Finding similar wines to {}'.format(wine['product'][wine_id])
+    print 'Description: {}'.format(wine['description'][wine_id])
+    print
+    print 'Regular: {}'.format(sim_wines)
+    print 'Other:     {}'.format(sim_wines2)
+    print
+    print return_recs_df(wine, cs1, wine_id)
+    print
+    print return_recs_df(wine, cs2, wine_id)
+
+def compare_tokens(wine, wine_id):
+    '''
+    Compare reg, lem, porter, snowball
+    '''
+    #Regular tokenizing
+    cs, top_feats = cosine_sim_matrix(df=wine, tf=True)
+    #Lemmatize the descriptions
+    csl, top_feats_l = cosine_sim_matrix(df=wine, tf=True, stemlem=1)
+    #PorterStemmer the descriptions
+    csp, top_feats_p = cosine_sim_matrix(df=wine, tf=True, stemlem=2)
+    #SnowballStemmer the descriptions
+    css, top_feats_s = cosine_sim_matrix(df=wine, tf=True, stemlem=3)
+
+    sim_wines = top_n_sim(cs, wine_id)
+    l_sim_wines = top_n_sim(csl, wine_id)
+    p_sim_wines = top_n_sim(csp, wine_id)
+    s_sim_wines = top_n_sim(css, wine_id)
+
+    print 'Finding similar wines to {}'.format(wine['product'][wine_id])
+    print 'Description: {}'.format(wine['description'][wine_id])
+    print
+    print 'Regular: {}'.format(sim_wines)
+    print 'Lem:     {}'.format(l_sim_wines)
+    print 'Porter:  {}'.format(p_sim_wines)
+    print 'Snow:    {}'.format(s_sim_wines)
+
 def rec_comparison_csv(df, n=5):
     '''Compare Different Recs'''
     info = []
@@ -186,6 +249,8 @@ def rec_comparison_csv(df, n=5):
     comp_df.to_csv('../csv/rec_comparison.csv')
     print 'Done'
 
+
+
 ######################################
 
 if __name__ == '__main__':
@@ -194,29 +259,9 @@ if __name__ == '__main__':
     wine = load_data(filename)
     wine = create_product_name(wine)
     #rec_comparison_csv(wine)
-    cs, top_feats = cosine_sim_matrix(df=wine, tf=True, lem=False)
-    print wine.values[10]
-    print top_feats
-    #Regular tokenizing
-    #cs = cosine_sim_matrix(df=wine, tf=True, lem=False)
-    #Lemmatize the descriptions
-    #csl = cosine_sim_matrix(df=wine, tf=True, lem=True)
-
-    '''
-    Script for quick check on recommendations
-    '''
-    # check_wine_id = 28
-    # sim_wines = top_n_sim(cs, check_wine_id)
-    # l_sim_wines = top_n_sim(csl, check_wine_id)
-    # print 'Finding similar wines to {}'.format(wine['product'][check_wine_id])
-    # print 'Description: {}'.format(wine['description'][check_wine_id])
-    # print
-    # print 'Regular: {}'.format(sim_wines)
-    # print 'Lem:     {}'.format(l_sim_wines)
-    # print
-    # print return_recs_df(wine, cs, check_wine_id)
-    # print
-    # print return_recs_df(wine, csl, check_wine_id)
+    # cs, top_feats = cosine_sim_matrix(df=wine, tf=True, lem=False)
+    # print wine.values[10]
+    # print top_feats
 
 
 ######################################
