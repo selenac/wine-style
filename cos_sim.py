@@ -46,7 +46,7 @@ def create_wine_stop(df):
     # working list of stop words
     wine_stop_lib = ['aromas', 'drink', 'fruit', 'palate','wine', 'like', 'bit',
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame', 'alcohol',
-                     'yet', 'seem']
+                     'yet', 'seem', 'bottle']
     return stopwords.words('english') + wine_stop_lib + create_variety_list(df)
 
 ''' Tokenizers '''
