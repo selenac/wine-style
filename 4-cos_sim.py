@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
-# Loading Data into a dataframe
+''' Loading Data into a dataframe '''
 
 def load_data(filename):
     '''
@@ -18,7 +18,7 @@ def load_data(filename):
     df = pd.read_csv(filename)
     return df
 
-# Update dataframe with product name column for identification
+''' Update dataframe with product name column for identification '''
 
 def create_product_name(df):
     '''
@@ -27,7 +27,7 @@ def create_product_name(df):
     df['product'] = df['winery'] + ' ' + df['designation'].fillna('') + ' ' + df['variety']
     return df
 
-# Additional stop words generated related to wine
+''' Additional stop words generated related to wine '''
 
 def create_variety_list(df):
     '''
@@ -45,15 +45,17 @@ def create_wine_stop(df):
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame']
     return stopwords.words('english') + wine_stop_lib + create_variety_list(df)
 
-# Tokenizing stratgeies.
-# TODO figure out the ascii errors!!
+''' Tokenizers '''
 
 def lemmatize_descriptions(descriptions):
     l = WordNetLemmatizer()
     lemmatize = lambda d: " ".join(l.lemmatize(w) for w in d.split())
     return [lemmatize(desc.decode(errors='ignore')) for desc in descriptions]
 
-# Vectorizers
+def snowball_stem_descriptions(descriptions):
+    pass
+
+''' Vectorizers '''
 
 def get_tfidf_vect(df):
     wine_stop_words = create_wine_stop(df)
@@ -93,7 +95,7 @@ def transform_vect(df, lem=False):
 #     cv = v.fit_transform(desc)
 #     return cv
 
-# Similarity Comparisons
+''' Similarity Comparisons '''
 
 def cosine_sim_matrix(df, tf=True, lem=False):
     if tf:
@@ -104,7 +106,7 @@ def cosine_sim_matrix(df, tf=True, lem=False):
         cosine_similiarity = linear_kernel(cv, cv)
     return cosine_similiarity
 
-# Recommendations
+''' Recommendations'''
 
 def pred_one(cs, item_id):
     arr = cs[item_id].argsort()[-2:][::-1]
@@ -145,17 +147,66 @@ def return_recs_df(df, cs, item_id, n=5):
         recommendation.append(df.values[rec_id[0]])
     return recommendation
 
+def rec_comparison_csv(df, n=5):
+    '''Compare Different Recs'''
+    info = []
+    columns = ['wine_id', 'wine_selected', 'token_type',
+                'rec_rank', 'sim_score', 'rec_wine_id', 'rec_wine_name']
+    check_wine_ids = np.random.choice(len(wine), n) #random wines to check
+
+    cs = cosine_sim_matrix(df, tf=True, lem=False)
+    csl = cosine_sim_matrix(df, tf=True, lem=True)
+
+    for wine_id in check_wine_ids:
+        sim_wines = top_n_sim(cs, wine_id)
+        l_sim_wines = top_n_sim(csl, wine_id)
+        for i in xrange(len(sim_wines)):
+            score = sim_wines[i][1]
+            rec_wine_id = sim_wines[i][0]
+            info.append([wine_id, df['product'][wine_id], 'reg', i+1,
+            score, rec_wine_id, df['product'][rec_wine_id]])
+        for i in xrange(len(l_sim_wines)):
+            score = l_sim_wines[i][1]
+            rec_wine_id = l_sim_wines[i][0]
+            info.append([wine_id, df['product'][wine_id],'lem', i+1,
+            score, rec_wine_id, df['product'][rec_wine_id]])
+
+    comp_df = pd.DataFrame(info, columns=columns)
+    comp_df.to_csv('../csv/rec_comparison.csv')
+    print 'Done'
+
 ######################################
 
 if __name__ == '__main__':
 
-    filename = '../eda/train_sample.csv'
+    filename = '../csv/sample.csv'
     wine = load_data(filename)
     wine = create_product_name(wine)
-    cs = cosine_sim_matrix(df=wine, tf=True, lem=True)
-    sim_wines = top_n_sim(cs, 1)
-    print sim_wines
-    print
+    rec_comparison_csv(wine)
+
+    #Regular tokenizing
+    #cs = cosine_sim_matrix(df=wine, tf=True, lem=False)
+    #Lemmatize the descriptions
+    #csl = cosine_sim_matrix(df=wine, tf=True, lem=True)
+
+    # Test recommendations
+    # check_wine_id = 28
+    # sim_wines = top_n_sim(cs, check_wine_id)
+    # l_sim_wines = top_n_sim(csl, check_wine_id)
+    # print 'Finding similar wines to {}'.format(wine['product'][check_wine_id])
+    # print 'Description: {}'.format(wine['description'][check_wine_id])
+    # print
+    # print 'Regular: {}'.format(sim_wines)
+    # print 'Lem:     {}'.format(l_sim_wines)
+    # print
+    # print return_recs_df(wine, cs, check_wine_id)
+    # print
+    # print return_recs_df(wine, csl, check_wine_id)
+
+#TODO get top features from each tokenized description
+
+
+
     # cvcs = cosine_sim_matrix(df=wine, tf=False, lem=False)
     # sim_wines = top_n_sim(cvcs, 1)
     # print sim_wines
