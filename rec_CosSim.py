@@ -1,0 +1,19 @@
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import linear_kernel
+
+class RecCosineSimilarity(object):
+
+    def __init__(self, n_size):
+        self.n_size = n_size
+
+    def fit(self, wine_mat):
+        self.wine_mat = wine_mat
+        self.n_wines = wine_mat.shape[0]
+
+    def recommend_to_one(self, wine_id):
+        wine_vec = self.wine_mat[wine_id].toarray()
+        cs = cosine_similarity(wine_vec, self.wine_mat)
+        rec_ids = np.argsort(cs[0])[-(self.n_size+1):][::-1]
+        rec_ids = rec_ids[1:] #drop 1st element (always equal to wine_id)
+        return rec_ids
