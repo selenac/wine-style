@@ -177,6 +177,8 @@ def return_recs_df(df, cs, item_id, n=5):
         recommendation.append(df.values[rec_id[0]])
     return recommendation
 
+'''Compare outputs'''
+
 def quick_comp(wine, cs1, cs2, wine_id):
     '''
     Script for quick check on recommendations

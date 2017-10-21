@@ -15,7 +15,13 @@ g.head()
 
 
 group_df3
+
+df[df['country'] == 'France']
+
+df[df['Unnamed: 0'] == 63271]
+
 ######################################
+
 
 if __name__ == '__main__':
 
