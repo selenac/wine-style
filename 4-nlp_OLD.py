@@ -209,3 +209,30 @@ if __name__ == '__main__':
 #     wine_df.apply(lambda text: word_tokenize(unicode(text, 'utf-8')))
 #     docs = [word_tokenize(content) for content in wine_df['description']]
 #     wine_df['tokenized'] = wine_df['description'].apply(word_tokenize)
+
+
+
+'''
+data exploration -- move things
+'''
+#
+# df = pd.read_csv('../csv/sample.csv')
+# df.index
+# df.info()
+# group_df = df.groupby(['variety', 'winery'])['description'].apply(lambda x: '; '.join(x))
+# group_df2 = df.groupby(['winery', 'variety'])['description'].apply(lambda x: '; '.join(x))
+# group_df3 = df.groupby(['variety', 'province'])['description'].apply(lambda x: '; '.join(x))
+#
+# g = df.groupby(['variety', 'winery'])
+# g.indices
+# g['description'].apply(lambda x: '; '.join(x))
+# g.head()
+#
+#
+# group_df3
+#
+# df[df['country'] == 'France']
+#
+# df[df['Unnamed: 0'] == 63271]
+#
+######################################
