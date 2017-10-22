@@ -1,8 +1,29 @@
 from data_processing import clean_data
-
-from gensim import matutils
-from gensim.models.ldamodel import LdaModel
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+
+def latentdirichletallocation(column, stop_words, num_topics=9, passes=20):
+    '''
+    Input:
+        column: text from dataframe
+        stop_words: nltk stop words plus wine specific
+    Output:
+        cv_docs: Matrix
+        feature_names: list of features/vocab
+        lda: fitted model object
+    '''
+    desc = get_corpus(column)
+    vect, cv_docs, feature_names = get_countvect(desc, stop_words)
+    lda = fit_LDA(X=cv_docs, num_topics=num_topics, passes=passes)
+    return cv_docs, feature_names, lda
+
+def display_topics(model, feature, n_words):
+    for i, topic in enumerate(model.components_):
+        print("Topic %d:" % (i))
+        print(" ".join([feature[j]
+                        for j in topic.argsort()[:-n_words - 1:-1]]))
+
+##############################################################
 
 def get_corpus(column):
     '''
@@ -22,27 +43,39 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
         cv_docs: sparse matrix of counts
     '''
     vect = CountVectorizer(stop_words = wine_stop_words,
-                           #decode_error = 'ignore',
-                           #strip_accents = 'unicode',
-                           # max_df = 0.97, # min_df = 0.03, # ngram_range = (1,2),
+                           analyzer='word',
+                           decode_error = 'ignore',
+                           strip_accents = 'unicode',
                            lowercase = True)
+                           # max_df = 0.97, # min_df = 0.03, # ngram_range = (1,2),
+
     cv_docs = vect.fit_transform(desc)
     vocab = vect.get_feature_names()
     return vect, cv_docs, vocab
 
-def fit_LDA(X, vocab, num_topics=10, passes=10):
+def fit_LDA(X, num_topics=9, passes=20):
     '''
+    Input:
+        X: vectorized matrix of the documents
+        num_topics: (int) number of topic categories
+        passes: (int) number of iterations to fit
     '''
-    print 'fitting lda...'
-    return LdaModel(matutils.Sparse2Corpus(X),
-                    num_topics=num_topics, passes=passes,
-                    id2word=dict([(i, s) for i, s in enumerate(vocab)]))
+    lda = LatentDirichletAllocation(n_topics=num_topics,
+                                    max_iter=passes).fit(X)
+    return lda
+
+# Gensim LDA model not working [issue: vocab not relevant?]
+
+# from gensim import matutils
+# from gensim.models.ldamodel import LdaModel
+# def fit_LDA(X, vocab, num_topics=10, passes=10):
+# return LdaModel(matutils.Sparse2Corpus(X),
+#                 num_topics=num_topics, passes=passes,
+#                 id2word=dict([(i, s) for i, s in enumerate(vocab)]))
 
 # def print_topics(lda, vocab, n=10):
-#     '''
-#     '''
 #     topics = lda.show_topics()
-# gensim.matutils.argsort(x, topn=None, reverse=False)
+#      gensim.matutils.argsort(x, topn=None, reverse=False)
 
 if __name__ == '__main__':
     filepath = '../../data/sample.csv'
@@ -51,5 +84,12 @@ if __name__ == '__main__':
     documents = get_corpus(wine_df['description'])
     vect, cv_docs, vocab = get_countvect(documents, wine_stop_lib)
 
-    lda = fit_LDA(cv_docs, vocab, num_topics=5, passes=20)
-    lda.print_topics()
+    lda = fit_LDA(X=cv_docs, num_topics=9, passes=20)
+    display_topics(model=lda, feature=vocab, n_words=10)
+    lda_map = lda.fit_transform(cv_docs) #returns numpy array map of (wine x topics)
+
+    '''
+    lda_map[0].argmax() #return top topic index col
+    lda_map[0].max() # return top topic score
+    lda_map[0].argsort()[-3:][::-1] #return top 3 topics index col
+    '''

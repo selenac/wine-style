@@ -1,5 +1,6 @@
 from data_processing import clean_data
 from fs_TFIDF import tfidf_matrix_features
+from fs_LDA import latentdirichletallocation
 from rec_CosSim import RecCosineSimilarity
 
 filepath = '../../data/sample.csv' # sample dataset for build-testing
@@ -8,19 +9,19 @@ filepath = '../../data/sample.csv' # sample dataset for build-testing
 wine_df, wine_stop_lib = clean_data(filepath)
 descriptions = wine_df['description']
 
-'''TFIDF (Regular Tokens)'''
+#TFIDF (Regular Tokens)
 tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 
-'''TFIDF (Lemmatize Tokens)'''
+#TFIDF (Lemmatize Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
 
-'''TFIDF (Porter Stem Tokens)'''
+#TFIDF (Porter Stem Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=2)
 
-'''TFIDF (Snowball Stem Tokens)'''
+#TFIDF (Snowball Stem Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=3)
 
-'''Recommendation'''
+#Recommendation
 rec_for_id = 80 # Want recommendations similar to this ID
 
 cs = RecCosineSimilarity(n_size=5)
@@ -31,3 +32,10 @@ print "Wine I like: {}".format(wine_df['product'][rec_for_id])
 print "Recommendations: "
 for n, idx in enumerate(test_one):
     print "{}. {}".format(n+1, wine_df['product'][idx])
+
+
+'''
+# LDA
+cv_docs, features, lda = latentdirichletallocation(descriptions, wine_stop_lib, num_topics=9, passes=20)
+lda_map = lda.fit_transform(cv_docs)
+'''
