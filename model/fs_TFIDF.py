@@ -6,7 +6,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def tfidf_matrix_features(column, stop_words, stemlem=0):
     '''
-    Run this.
     Input:
         column: text from dataframe
         stop_words: nltk stop words plus wine specific
@@ -74,7 +73,13 @@ def _snowball_stem_tokens(descriptions):
 def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
     '''
     Input:
+        desc: tokenized descriptions
+        stop_words: nltk stop words plus wine specific
+        stemlem: int (0s) None, (1) Lemmatize, (2) Porter, (3) Snowball
     Output:
+        vect: tfidf text Vectorizer object
+        tfidf_docs: sparse matrix of TFIDF values
+
     '''
     vect = TfidfVectorizer(stop_words = wine_stop_words,
                             decode_error = 'ignore',

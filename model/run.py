@@ -2,14 +2,26 @@ from data_processing import clean_data
 from fs_TFIDF import tfidf_matrix_features
 from rec_CosSim import RecCosineSimilarity
 
-filepath = '../csv/sample.csv'
+filepath = '../../data/sample.csv' # sample dataset for build-testing
+# filepath = '../../data/wine_data.csv' # full dataset
+
 wine_df, wine_stop_lib = clean_data(filepath)
 descriptions = wine_df['description']
 
-#TFIDF (Regular Tokens)
+'''TFIDF (Regular Tokens)'''
 tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 
-rec_for_id = 100 # Want recommendations similar to this ID
+'''TFIDF (Lemmatize Tokens)'''
+# tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
+
+'''TFIDF (Porter Stem Tokens)'''
+# tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=2)
+
+'''TFIDF (Snowball Stem Tokens)'''
+# tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=3)
+
+'''Recommendation'''
+rec_for_id = 80 # Want recommendations similar to this ID
 
 cs = RecCosineSimilarity(n_size=5)
 cs.fit(tfidf_docs)
