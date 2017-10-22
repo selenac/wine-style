@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.metrics.pairwise import linear_kernel
 
 class RecCosineSimilarity(object):
 
@@ -12,6 +11,10 @@ class RecCosineSimilarity(object):
         self.n_wines = wine_mat.shape[0]
 
     def recommend_to_one(self, wine_id):
+        '''
+        Input: wine_id - index for wine seeking recommendations
+        Output: rec_ids - numpy array of n_size with top cosine similar wines
+        '''
         wine_vec = self.wine_mat[wine_id].toarray()
         cs = cosine_similarity(wine_vec, self.wine_mat)
         rec_ids = np.argsort(cs[0])[-(self.n_size+1):][::-1]
