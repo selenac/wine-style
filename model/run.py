@@ -10,10 +10,10 @@ wine_df, wine_stop_lib = clean_data(filepath)
 descriptions = wine_df['description']
 
 #TFIDF (Regular Tokens)
-tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
+# tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 
 #TFIDF (Lemmatize Tokens)
-# tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
+tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
 
 #TFIDF (Porter Stem Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=2)
@@ -22,7 +22,7 @@ tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=3)
 
 #Recommendation
-rec_for_id = 80 # Want recommendations similar to this ID
+rec_for_id = 100 # Want recommendations similar to this ID
 
 cs = RecCosineSimilarity(n_size=5)
 cs.fit(tfidf_docs)

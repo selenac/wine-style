@@ -47,8 +47,7 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
                            decode_error = 'ignore',
                            strip_accents = 'unicode',
                            lowercase = True)
-                           # max_df = 0.97, # min_df = 0.03, # ngram_range = (1,2),
-
+                           # max_df = 0.97, # min_df = 0.03, # ngram_range = (1,2)
     cv_docs = vect.fit_transform(desc)
     vocab = vect.get_feature_names()
     return vect, cv_docs, vocab
@@ -59,9 +58,12 @@ def fit_LDA(X, num_topics=9, passes=20):
         X: vectorized matrix of the documents
         num_topics: (int) number of topic categories
         passes: (int) number of iterations to fit
+    Output: lda object model
     '''
-    lda = LatentDirichletAllocation(n_topics=num_topics,
-                                    max_iter=passes).fit(X)
+    print 'fitting...'
+    lda = LatentDirichletAllocation(n_components=num_topics,
+                                    max_iter=passes,
+                                    learning_method='online').fit(X)
     return lda
 
 # Gensim LDA model not working [issue: vocab not relevant?]
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     documents = get_corpus(wine_df['description'])
     vect, cv_docs, vocab = get_countvect(documents, wine_stop_lib)
 
-    lda = fit_LDA(X=cv_docs, num_topics=9, passes=20)
+    lda = fit_LDA(X=cv_docs, num_topics=9, passes=25)
     display_topics(model=lda, feature=vocab, n_words=10)
     lda_map = lda.fit_transform(cv_docs) #returns numpy array map of (wine x topics)
 
