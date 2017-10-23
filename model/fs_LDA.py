@@ -2,7 +2,7 @@ from data_processing import clean_data
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 
-def latentdirichletallocation(column, stop_words, num_topics=9, passes=20):
+def latentdirichletallocation(column, stop_words, num_topics=9, passes=25):
     '''
     Input:
         column: text from dataframe
@@ -19,9 +19,8 @@ def latentdirichletallocation(column, stop_words, num_topics=9, passes=20):
 
 def display_topics(model, feature, n_words):
     for i, topic in enumerate(model.components_):
-        print("Topic %d:" % (i))
-        print(" ".join([feature[j]
-                        for j in topic.argsort()[:-n_words - 1:-1]]))
+        print("{}: {}".format(i, " ".join([feature[j]
+                            for j in topic.argsort()[:-n_words - 1:-1]])))
 
 ##############################################################
 
@@ -45,14 +44,17 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
     vect = CountVectorizer(stop_words = wine_stop_words,
                            analyzer='word',
                            decode_error = 'ignore',
-                           strip_accents = 'unicode',
-                           lowercase = True)
-                           # max_df = 0.97, # min_df = 0.03, # ngram_range = (1,2)
+                           #strip_accents = 'unicode',
+                           lowercase = True,
+                           max_df = 0.99,
+                           min_df = 0.01,
+                           #ngram_range = (1,2,
+                           )
     cv_docs = vect.fit_transform(desc)
     vocab = vect.get_feature_names()
     return vect, cv_docs, vocab
 
-def fit_LDA(X, num_topics=9, passes=20):
+def fit_LDA(X, num_topics=9, passes=25):
     '''
     Input:
         X: vectorized matrix of the documents
