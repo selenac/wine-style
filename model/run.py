@@ -9,8 +9,8 @@ filepath = '../../data/sample.csv' # sample dataset for build-testing
 
 '''Regular clean_data'''
 wine_df, wine_stop_lib = clean_data(filepath)
-descriptions = wine_df['description']
-
+descriptions = wine_df['description'][:10] #Test with 10
+print type(descriptions)
 # Aggregate Descriptions
 # agg_df, groups = agg_description(wine_df)
 # descriptions = agg_df.values
@@ -27,22 +27,24 @@ tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemle
 #TFIDF (Snowball Stem Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=3)
 
-
 #Recommendation
-rec_for_id = 560 # Want recommendations similar to this ID
+def make_recommendation(rec_for_id, tfidf_docs, features, n_size=5):
+    cs = RecCosineSimilarity(n_size=5)
+    cs.fit(tfidf_docs)
+    test_one = cs.recommend_to_one(wine_id = rec_for_id)
 
-cs = RecCosineSimilarity(n_size=5)
-cs.fit(tfidf_docs)
-test_one = cs.recommend_to_one(wine_id = rec_for_id)
+    top_feats, top_idx = find_top_features_per_wine(features, tfidf_docs)
 
-top_feats, top_idx = find_top_features_per_wine(features, tfidf_docs)
+    print "Wine I like: {}".format(wine_df['product'][rec_for_id])
+    print " Features: {}".format(top_feats[rec_for_id])
+    print "Recommendations: "
+    for n, idx in enumerate(test_one):
+        print "{}. {}".format(n+1, wine_df['product'][idx])
+        print "       {}".format(top_feats[idx])
 
-print "Wine I like: {}".format(wine_df['product'][rec_for_id])
-print " Features: {}".format(top_feats[rec_for_id])
-print "Recommendations: "
-for n, idx in enumerate(test_one):
-    print "{}. {}".format(n+1, wine_df['product'][idx])
-    print "       {}".format(top_feats[idx])
+rec_for_id = 5 # Want recommendations similar to this ID
+make_recommendation(rec_for_id, tfidf_docs, features)
+
 
 '''
 #Recommendation for Aggregate Descriptions

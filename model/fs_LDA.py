@@ -51,7 +51,8 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
                            min_df = 0.01,
                            #ngram_range = (1,2,
                            )
-    desc = _lemmatize_tokens(desc)
+    if stemlem == 1:
+        desc = _lemmatize_tokens(desc)
     cv_docs = vect.fit_transform(desc)
     vocab = vect.get_feature_names()
     return vect, cv_docs, vocab
