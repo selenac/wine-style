@@ -20,3 +20,5 @@ class RecCosineSimilarity(object):
         rec_ids = np.argsort(cs[0])[-(self.n_size+1):][::-1]
         rec_ids = rec_ids[1:] #drop 1st element (always equal to wine_id)
         return rec_ids
+
+if __name__ == '__main__':

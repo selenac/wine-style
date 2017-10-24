@@ -1,4 +1,5 @@
 from data_processing import clean_data
+from fs_TFIDF import _lemmatize_tokens
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 
@@ -50,6 +51,7 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
                            min_df = 0.01,
                            #ngram_range = (1,2,
                            )
+    desc = _lemmatize_tokens(desc)
     cv_docs = vect.fit_transform(desc)
     vocab = vect.get_feature_names()
     return vect, cv_docs, vocab
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     documents = get_corpus(wine_df['description'])
     vect, cv_docs, vocab = get_countvect(documents, wine_stop_lib)
 
-    lda = fit_LDA(X=cv_docs, num_topics=9, passes=25)
+    lda = fit_LDA(X=cv_docs, num_topics=9, passes=50)
     display_topics(model=lda, feature=vocab, n_words=10)
     lda_map = lda.fit_transform(cv_docs) #returns numpy array map of (wine x topics)
 
