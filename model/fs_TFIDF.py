@@ -12,7 +12,7 @@ def tfidf_matrix_features(column, stop_words, stemlem=0):
         stemlem: int (0s) None, (1) Lemmatize, (2) Porter, (3) Snowball
     Output:
         tfidf_docs: Matrix
-        tfidf_feature_names:
+        feature_names: array of features/vocab
     '''
     desc = get_corpus(column)
     vect, tfidf_docs = get_tfidf(desc, stop_words, stemlem)
@@ -28,10 +28,11 @@ def find_top_features_per_wine(feature_names, tfidf_docs, n_features=10):
     Output:
         top n features from each wine in TFIDF matrix, and wine index
     '''
+    tfidf_docs = tfidf_docs.toarray()
     top_idx = np.empty([tfidf_docs.shape[0], n_features], dtype=int)
     top_feats = np.empty([tfidf_docs.shape[0], n_features], dtype=object)
     for i, row in enumerate(tfidf_docs):
-        top_idx[i] = np.argsort(row)[::-1][:n_features]
+        top_idx[i] = np.argsort(row)[-n_features:][::-1]
         top_feats[i] = feature_names[top_idx[i]]
     return top_feats, top_idx
 
@@ -84,8 +85,8 @@ def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
     vect = TfidfVectorizer(stop_words = wine_stop_words,
                             decode_error = 'ignore',
                             strip_accents = 'unicode',
-                            max_df = 0.97,
-                            min_df = 0.03,
+                            max_df = 0.99,
+                            min_df = 0.01,
                             ngram_range = (1,2),
                             lowercase = True)
     if stemlem==1:
@@ -96,3 +97,6 @@ def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
         desc = _snowball_stem_tokens(desc)
     tfidf_docs = vect.fit_transform(desc)
     return vect, tfidf_docs
+
+if __name__ == '__main__':
+    pass

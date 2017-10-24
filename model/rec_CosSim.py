@@ -22,3 +22,4 @@ class RecCosineSimilarity(object):
         return rec_ids
 
 if __name__ == '__main__':
+    pass

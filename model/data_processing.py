@@ -40,6 +40,7 @@ def _create_product_col(df):
     df['product'] = df['winery'] + ' ' + df['designation'].fillna('') + ' ' + df['variety']
     return df
 
+#TODO split words in varietal
 def _create_variety_list(df):
     '''
     Output: Unique variety list
@@ -52,9 +53,10 @@ def _create_wine_stop(df):
     Output: Wine stop words to use in tokenizing
     '''
     # working list of stop words
-    wine_stop_lib = ['aromas', 'drink', 'fruit', 'palate', 'wine', 'like', 'bit',
+    wine_stop_lib = ['aroma', 'drink', 'fruit', 'palate', 'wine', 'like', 'bit',
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame', 'alcohol',
-                     'yet', 'seem', 'bottle', 'flavor', 'show', 'good']
+                     'yet', 'seem', 'bottle', 'flavor', 'show', 'good', 'cabernet',
+                     'year']
     return stopwords.words('english') + wine_stop_lib + _create_variety_list(df)
 
 if __name__ == '__main__':
