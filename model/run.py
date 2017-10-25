@@ -3,6 +3,10 @@ from fs_TFIDF import tfidf_matrix_features, find_top_features_per_wine
 from fs_LDA import latentdirichletallocation
 from rec_CosSim import RecCosineSimilarity
 
+from fs_TFIDF import _lemmatize_tokens_pos
+import string
+from nltk import pos_tag
+from nltk.stem.wordnet import WordNetLemmatizer
 
 filepath = '../../data/sample.csv' # sample dataset for build-testing
 # filepath = '../../data/all_wine_data.csv' # full dataset
@@ -19,7 +23,7 @@ descriptions = wine_df['description'][:500] #Test with 500
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 
 #TFIDF (Lemmatize Tokens - with POS filter)
-tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
+vect, tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
 
 #TFIDF (Porter Stem Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=2)
@@ -28,12 +32,12 @@ tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemle
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=3)
 
 #Recommendation
-def make_recommendation(rec_for_id, tfidf_docs, features, n_size=5):
+def make_recommendation(rec_for_id, vect, tfidf_docs, features, n_size=5):
     cs = RecCosineSimilarity(n_size)
-    cs.fit(tfidf_docs)
+    cs.fit(vect, tfidf_docs)
     test_one = cs.recommend_to_one(wine_id = rec_for_id)
 
-    top_feats, top_idx = find_top_features_per_wine(features, tfidf_docs)
+    top_feats, top_idx = find_top_features_per_wine(features, tfidf_docs, n_features=5)
 
     print "Wine I like: {}".format(wine_df['product'][rec_for_id])
     print " Features: {}".format(top_feats[rec_for_id])
@@ -42,9 +46,22 @@ def make_recommendation(rec_for_id, tfidf_docs, features, n_size=5):
         print "{}. {}".format(n+1, wine_df['product'][idx])
         print "       {}".format(top_feats[idx])
 
-rec_for_id = 275 # Want recommendations similar to this ID
-make_recommendation(rec_for_id, tfidf_docs, features)
+rec_for_id = 333 # Want recommendations similar to this ID
+# make_recommendation(rec_for_id, vect, tfidf_docs, features)
 
+# Recommendation from User Input
+
+def make_rec_from_user(vect, tfidf_docs, n_size=5):
+    cs = RecCosineSimilarity(n_size)
+    cs.fit(vect, tfidf_docs)
+    user_input = raw_input("Describe the flavors you like in wine: ")
+    test_one = cs.recommend_user_input(user_input)
+    print "Recommendations: "
+    for n, idx in enumerate(test_one):
+        print "{}. {}".format(n+1, wine_df['product'][idx])
+        print "    {}, {}".format(wine_df['country'][idx], wine_df['price'][idx])
+
+make_rec_from_user(vect, tfidf_docs)
 
 '''
 #Recommendation for Aggregate Descriptions
@@ -67,5 +84,25 @@ for n, idx in enumerate(test_one):
 # LDA
 cv_docs, features, lda = latentdirichletallocation(descriptions, wine_stop_lib, num_topics=9, passes=20)
 lda_map = lda.fit_transform(cv_docs) # document by topic matrix
-
 '''
+
+#
+# import numpy as np
+#
+#
+#
+# cs = RecCosineSimilarity(5)
+# cs.fit(tfidf_docs)
+#
+# user_input = "Grippy leather and tobacco provide a gravelly texture and burly   \
+#               nature to this medium-bodied wine, which finds its groove in      \
+#               the glass. Concentrated and dense, it offers smoother elements    \
+#               of black currant, cassis and leather on the finish."
+#
+#
+#
+#
+# user_lem = _lemmatize_tokens_pos([user_input])
+# user_matrix = vect.transform(user_lem) #returns matrix 1 x # features
+# user_cs = cosine_similarity(user_matrix, tfidf_docs)
+# rec_ids = np.argsort(user_cs[0])[-5:][::-1] # wine ids with best match

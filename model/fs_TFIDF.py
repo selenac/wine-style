@@ -13,13 +13,14 @@ def tfidf_matrix_features(column, stop_words, stemlem=0):
         stop_words: nltk stop words plus wine specific
         stemlem: int (0s) None, (1) Lemmatize, (2) Porter, (3) Snowball
     Output:
+        vect: vectorizer
         tfidf_docs: Matrix
         feature_names: array of features/vocab
     '''
     desc = get_corpus(column)
     vect, tfidf_docs = get_tfidf(desc, stop_words, stemlem)
     feature_names = np.array(vect.get_feature_names())
-    return tfidf_docs, feature_names
+    return vect, tfidf_docs, feature_names
 
 def find_top_features_per_wine(feature_names, tfidf_docs, n_features=10):
     '''
@@ -51,8 +52,6 @@ def get_corpus(column):
     return [desc for desc in column]
 
 ''' Various Tokenizers '''
-def regular_tokens(descriptions):
-    pass
 
 def _lemmatize_tokens(descriptions):
     l = WordNetLemmatizer()
@@ -63,25 +62,12 @@ def _lemmatize_tokens_pos(descriptions):
     '''
     Return POS tokens
     '''
-    # TODO has to be a better way! So many for loops.
     l = WordNetLemmatizer()
     adj_list = ['JJ', 'JJR', 'JJS']
     noun_list = ['NN', 'NNS', 'NNP', 'NND']
-
     descriptions = [desc.translate(None, string.punctuation) for desc in descriptions]
     tokens = [desc.decode(errors='ignore').lower().split() for desc in descriptions]
-
-    #strip punctuation from tokens -
-    # tmplst = []
-    # tmptok = []
-    # for token in tokens:
-    #     for t in token:
-    #         tmptok.append(t.strip(string.punctuation))
-    #     tmplst.append(tmptok)
-    #     tmptok = []
-    # pos_tokens = [pos_tag(t_desc) for t_desc in tmplst]
     pos_tokens = [pos_tag(t_desc) for t_desc in tokens]
-
     lem_desc = []
     for pos_token in pos_tokens:
         doc = []
