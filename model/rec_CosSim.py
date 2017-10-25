@@ -21,5 +21,12 @@ class RecCosineSimilarity(object):
         rec_ids = rec_ids[1:] #drop 1st element (always equal to wine_id)
         return rec_ids
 
+    def recommendation_matrix():
+        '''
+        Output: cs_matrix - numpy array reference for cs for wine x wine
+        '''
+        cs_matrix = cosine_similarity(self.wine_mat)
+        return cs_matrix
+
 if __name__ == '__main__':
     pass

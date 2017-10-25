@@ -1,4 +1,5 @@
 import numpy as np
+import string
 from nltk import pos_tag
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
@@ -62,11 +63,22 @@ def _lemmatize_tokens_pos(descriptions):
     '''
     Return POS tokens
     '''
+    # TODO has to be a better way! So many for loops.
     l = WordNetLemmatizer()
     adj_list = ['JJ', 'JJR', 'JJS']
     noun_list = ['NN', 'NNS', 'NNP', 'NND']
     tokens = [desc.decode(errors='ignore').lower().split() for desc in descriptions]
-    pos_tokens = [pos_tag(t_desc) for t_desc in tokens]
+
+    #strip punctuation from tokens -
+    templst = []
+    temptok = []
+    for token in tokens:
+        for t in token:
+            temptok.append(t.strip(string.punctuation))
+        templst.append(temptok)
+        temptok = []
+
+    pos_tokens = [pos_tag(t_desc) for t_desc in templst]
     lem_desc = []
     for pos_token in pos_tokens:
         doc = []

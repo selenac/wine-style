@@ -5,12 +5,12 @@ from rec_CosSim import RecCosineSimilarity
 
 
 filepath = '../../data/sample.csv' # sample dataset for build-testing
-# filepath = '../../data/wine_data.csv' # full dataset
+# filepath = '../../data/all_wine_data.csv' # full dataset
 
 '''Regular clean_data'''
 wine_df, wine_stop_lib = clean_data(filepath)
-descriptions = wine_df['description'][:10] #Test with 10
-print type(descriptions)
+descriptions = wine_df['description'][:500] #Test with 500
+
 # Aggregate Descriptions
 # agg_df, groups = agg_description(wine_df)
 # descriptions = agg_df.values
@@ -18,7 +18,7 @@ print type(descriptions)
 #TFIDF (Regular Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
 
-#TFIDF (Lemmatize Tokens)
+#TFIDF (Lemmatize Tokens - with POS filter)
 tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemlem=1)
 
 #TFIDF (Porter Stem Tokens)
@@ -29,7 +29,7 @@ tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib, stemle
 
 #Recommendation
 def make_recommendation(rec_for_id, tfidf_docs, features, n_size=5):
-    cs = RecCosineSimilarity(n_size=5)
+    cs = RecCosineSimilarity(n_size)
     cs.fit(tfidf_docs)
     test_one = cs.recommend_to_one(wine_id = rec_for_id)
 
@@ -42,7 +42,7 @@ def make_recommendation(rec_for_id, tfidf_docs, features, n_size=5):
         print "{}. {}".format(n+1, wine_df['product'][idx])
         print "       {}".format(top_feats[idx])
 
-rec_for_id = 5 # Want recommendations similar to this ID
+rec_for_id = 275 # Want recommendations similar to this ID
 make_recommendation(rec_for_id, tfidf_docs, features)
 
 

@@ -56,7 +56,7 @@ def _create_wine_stop(df):
     wine_stop_lib = ['aroma', 'drink', 'fruit', 'palate', 'wine', 'like', 'bit',
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame', 'alcohol',
                      'yet', 'seem', 'bottle', 'flavor', 'show', 'good', 'cabernet',
-                     'year']
+                     'year', 'winemaker']
     return stopwords.words('english') + wine_stop_lib + _create_variety_list(df)
 
 if __name__ == '__main__':
