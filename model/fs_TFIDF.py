@@ -67,18 +67,21 @@ def _lemmatize_tokens_pos(descriptions):
     l = WordNetLemmatizer()
     adj_list = ['JJ', 'JJR', 'JJS']
     noun_list = ['NN', 'NNS', 'NNP', 'NND']
+
+    descriptions = [desc.translate(None, string.punctuation) for desc in descriptions]
     tokens = [desc.decode(errors='ignore').lower().split() for desc in descriptions]
 
     #strip punctuation from tokens -
-    templst = []
-    temptok = []
-    for token in tokens:
-        for t in token:
-            temptok.append(t.strip(string.punctuation))
-        templst.append(temptok)
-        temptok = []
+    # tmplst = []
+    # tmptok = []
+    # for token in tokens:
+    #     for t in token:
+    #         tmptok.append(t.strip(string.punctuation))
+    #     tmplst.append(tmptok)
+    #     tmptok = []
+    # pos_tokens = [pos_tag(t_desc) for t_desc in tmplst]
+    pos_tokens = [pos_tag(t_desc) for t_desc in tokens]
 
-    pos_tokens = [pos_tag(t_desc) for t_desc in templst]
     lem_desc = []
     for pos_token in pos_tokens:
         doc = []
@@ -114,7 +117,6 @@ def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
     Output:
         vect: tfidf text Vectorizer object
         tfidf_docs: sparse matrix of TFIDF values
-
     '''
     vect = TfidfVectorizer(stop_words = wine_stop_words,
                             decode_error = 'ignore',
