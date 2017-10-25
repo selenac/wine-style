@@ -3,17 +3,12 @@ from fs_TFIDF import tfidf_matrix_features, find_top_features_per_wine
 from fs_LDA import latentdirichletallocation
 from rec_CosSim import RecCosineSimilarity
 
-from fs_TFIDF import _lemmatize_tokens_pos
-import string
-from nltk import pos_tag
-from nltk.stem.wordnet import WordNetLemmatizer
-
 filepath = '../../data/sample.csv' # sample dataset for build-testing
 # filepath = '../../data/all_wine_data.csv' # full dataset
 
 '''Regular clean_data'''
 wine_df, wine_stop_lib = clean_data(filepath)
-descriptions = wine_df['description'][:500] #Test with 500
+descriptions = wine_df['description']
 
 # Aggregate Descriptions
 # agg_df, groups = agg_description(wine_df)
@@ -46,7 +41,7 @@ def make_recommendation(rec_for_id, vect, tfidf_docs, features, n_size=5):
         print "{}. {}".format(n+1, wine_df['product'][idx])
         print "       {}".format(top_feats[idx])
 
-rec_for_id = 333 # Want recommendations similar to this ID
+#rec_for_id = 333 # Want recommendations similar to this ID
 # make_recommendation(rec_for_id, vect, tfidf_docs, features)
 
 # Recommendation from User Input
@@ -59,9 +54,12 @@ def make_rec_from_user(vect, tfidf_docs, n_size=5):
     print "Recommendations: "
     for n, idx in enumerate(test_one):
         print "{}. {}".format(n+1, wine_df['product'][idx])
-        print "    {}, {}".format(wine_df['country'][idx], wine_df['price'][idx])
+        print "    {}, ${}0".format(wine_df['country'][idx], wine_df['price'][idx])
 
-make_rec_from_user(vect, tfidf_docs)
+#make_rec_from_user(vect, tfidf_docs)
+
+
+
 
 '''
 #Recommendation for Aggregate Descriptions
@@ -85,24 +83,3 @@ for n, idx in enumerate(test_one):
 cv_docs, features, lda = latentdirichletallocation(descriptions, wine_stop_lib, num_topics=9, passes=20)
 lda_map = lda.fit_transform(cv_docs) # document by topic matrix
 '''
-
-#
-# import numpy as np
-#
-#
-#
-# cs = RecCosineSimilarity(5)
-# cs.fit(tfidf_docs)
-#
-# user_input = "Grippy leather and tobacco provide a gravelly texture and burly   \
-#               nature to this medium-bodied wine, which finds its groove in      \
-#               the glass. Concentrated and dense, it offers smoother elements    \
-#               of black currant, cassis and leather on the finish."
-#
-#
-#
-#
-# user_lem = _lemmatize_tokens_pos([user_input])
-# user_matrix = vect.transform(user_lem) #returns matrix 1 x # features
-# user_cs = cosine_similarity(user_matrix, tfidf_docs)
-# rec_ids = np.argsort(user_cs[0])[-5:][::-1] # wine ids with best match
