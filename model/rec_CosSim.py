@@ -12,6 +12,13 @@ class RecCosineSimilarity(object):
         self.wine_mat = wine_mat
         self.n_wines = wine_mat.shape[0]
 
+    def recommendation_matrix(self):
+        '''
+        Output: cs_matrix - numpy array reference for cs for wine x wine
+        '''
+        cs_matrix = cosine_similarity(self.wine_mat)
+        return cs_matrix
+
     def recommend_to_one(self, wine_id):
         '''
         Input: wine_id - index for wine seeking recommendations
@@ -22,13 +29,6 @@ class RecCosineSimilarity(object):
         rec_ids = np.argsort(cs[0])[-(self.n_size+1):][::-1]
         rec_ids = rec_ids[1:] #drop 1st element (always equal to wine_id)
         return rec_ids
-
-    def recommendation_matrix(self):
-        '''
-        Output: cs_matrix - numpy array reference for cs for wine x wine
-        '''
-        cs_matrix = cosine_similarity(self.wine_mat)
-        return cs_matrix
 
     def recommend_user_input(self, user_input):
         '''
