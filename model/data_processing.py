@@ -1,8 +1,6 @@
 import pandas as pd
 from nltk.corpus import stopwords
 
-# TODO How to handle the accented words in dataset? Latin-1 errors.
-
 def clean_data(filepath):
     '''
     Input:

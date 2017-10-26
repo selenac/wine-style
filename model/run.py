@@ -58,9 +58,6 @@ def make_rec_from_user(vect, tfidf_docs, n_size=5):
 
 #make_rec_from_user(vect, tfidf_docs)
 
-
-
-
 '''
 #Recommendation for Aggregate Descriptions
 group_id = 500 # Want recommendations similar to this group ID
