@@ -6,11 +6,11 @@ from build_model import RecCosineSimilarity
 
 app = Flask(__name__)
 
-with open('static/cos_sim_model.pkl') as f:
-    model = pickle.load(f)
-
 with open('static/wine_df.pkl') as f:
     wine_df = pickle.load(f)
+
+with open('static/cos_sim_model.pkl') as f:
+    model = pickle.load(f)
 
 @app.route('/', methods=['GET'])
 def index():
