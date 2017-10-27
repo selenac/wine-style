@@ -51,9 +51,9 @@
 						of our wine library</h2>
 					</header>
 					<select name=wines id=wines method="GET" action="/">
-						<option value="{{ wines[0] }}" selected>{{ wines[0] }}</option>
-						{% for wine in wines[1:] %}
-						<option value= "{{ wine }}">{{ wine }}</option>
+						<option value="{{ wines[0][0] }}" selected>{{ wines[0][1] }}</option>
+						{% for w_id, wine in wines[1:] %}
+						<option value= "{{ w_id }}">{{ wine }}</option>
 						{% endfor %}
 					</select>
 					<button id="bottle"  style="margin-left: 30px">Submit</button>
@@ -79,26 +79,26 @@
 				</div>
 			</article>
 
-			<!-- Recommendation -->
-				<article id="recommendation" class="container box style1 right">
-						<header>
-							<h2>Recommendations</h2>
-						</header>
-						<table id="table" border = '1'>
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>Province</th>
-									<th>~Price</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</article>
+	 <!-- Recommendation -->
+			<article id="recommendation" class="container box style1 right">
+					<header>
+						<h2>Recommendations</h2>
+					</header>
+					<table id="table" border = '1'>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Province</th>
+								<th>~Price</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</article>
 
 		<!-- Portfolio [Not in Use]-->
 <!--

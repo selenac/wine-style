@@ -14,9 +14,11 @@ with open('static/wine_df.pkl') as f:
 
 @app.route('/', methods=['GET'])
 def index():
-    rand_idxs = random.sample(range(len(wine_df)),10)
+    # Generate random list from wine library
+    rand_idxs = random.sample(range(len(wine_df)), 10)
     wine_names = [wine_df['product'][i].decode('utf8') for i in rand_idxs]
-    return render_template('index.html', wines=wine_names)
+    z_wine_names = zip(rand_idxs, wine_names)
+    return render_template('index.html', wines=z_wine_names)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -24,8 +26,7 @@ def predict():
     data = str(user_input[0])
     rec_type = user_input[1]
     if rec_type=='1':
-        wine_id = wine_df.index[wine_df['product']==data][0]
-        rec_ids = model.recommend_to_one(wine_id)
+        rec_ids = model.recommend_to_one(int(data))
     elif rec_type=='2':
         rec_ids = model.recommend_user_input(data)
     wineList = []
