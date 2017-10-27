@@ -1,9 +1,9 @@
-click==6.7
+click==6.6
 Flask==0.12.2
 itsdangerous==0.24
-Jinja2==2.9.6
-MarkupSafe==1.0
-Werkzeug==0.12.2
+Jinja2==2.8
+MarkupSafe==0.23
+Werkzeug==0.11.11
 jsonschema==2.5.1
 nltk==3.2.4
 numpy==1.13.1
