@@ -30,21 +30,19 @@ def predict():
     #     wine_name = request.json['wine_name']
     #     wine_id = wine_df.index[wine_df['product']==wine_name][0]
     #     rec_ids = model.recommend_to_one(wine_id)
-    # else:
+    # else
     data = str(request.json['user_input'])
     rec_ids = model.recommend_user_input(data)
     wineList = []
     for r in rec_ids:
         wDict = {
-            'Id': r,
-            'Name': wine_df['product'][r],
-            'Country': wine_df['country'][r],
-            'Province': wine_df['province'][r],
-            'Price': wine_df['price'][r]}
+            'id': r,
+            'name': wine_df['product'][r],
+            'province': wine_df['province'][r],
+            'price': wine_df['price'][r]}
         wineList.append(wDict)
-    recs = json.dumps(wineList)
+    recs = json.dumps(wineList, encoding='utf8')
     return jsonify({'recommendations': recs})
-
 
 
     # render_template('')

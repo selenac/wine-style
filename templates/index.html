@@ -70,27 +70,30 @@
 				<!--	<form action="/" method="POST" > -->
 						<textarea id="user_input",
 											rows="2", cols="30"></textarea>
-						<button id="description">Submit</button>
-						<p><span>Your text: </span><span id="recommendations"></span>
+						<button id="description"><a href="#recommendation">Submit</a></button>
+			<!--			<p><span>Your text: </span><span id="recommendations"></span> -->
 				<!-- </form> -->
 				</div>
 			</article>
 
 			<!-- Recommendation -->
-				<article id="rec" class="container box style1 right">
-					<a href="#" class="image fit"><img src="static/images/pic01.jpg" alt="" /></a>
-					<div class="inner">
+				<article id="recommendation" class="container box style1 right">
 						<header>
 							<h2>Recommendations</h2>
 						</header>
-						<p>Test</p>
-						<span id="recommendation"></span>
-						<a href="#recommendation" class="button style2 scrolly">Submit</a>
+						<table id="table" border = '1'>
+							<tr>
+								<th>Name</th>
+								<th>Province</th>
+								<th>~Price</th>
+							</tr>
+						</table>
 					</div>
 				</article>
 
 		<!-- Portfolio -->
-			<article id="recommendation" class="container box style2">
+<!--
+			<article id="rec" class="container box style2">
 				<header>
 					<h2>Recommendations</h2>
 					<p>Some wines to explore<br />
@@ -111,6 +114,7 @@
 					</div>
 				</div>
 			</article>
+	-->
 
 		<!-- Contact -->
 			<article class="container box style3">
@@ -328,6 +332,19 @@
 			  $("span#recommendations").text(recommendations);
 			}
 
+			let write_table = function(recommendations) {
+				var r = $.parseJSON(recommendations);
+				console.log(r)
+				var tr;
+				for (var i=0; i < 10; i++) {
+					tr = $('<tr>');
+					tr.append("<td>" + r[i].name + "</td>");
+					tr.append("<td>" + r[i].province + "</td>");
+					tr.append("<td>$" + r[i].price + "</td></tr>");
+					$('#table').append(tr);
+				}
+			}
+
 			let send_description = function() {
 			  let user_input = get_description();
 			  $.ajax({
@@ -336,10 +353,10 @@
 			      data: JSON.stringify({"user_input": user_input}),
 			      contentType: "application/json",
 			      success: function(data) {
-			          console.log(data);
-			          write_recommendations(data.recommendations);
-			      }
-			  });
+								console.log(data.recommendations);
+								write_table(data.recommendations);
+							}
+					});
 			}
 
 			$(document).ready(function() {
