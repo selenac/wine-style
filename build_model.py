@@ -5,8 +5,8 @@ cosine similarity between wine descriptions to find recommendations
 with a similar taste description.
 '''
 
-from data_processing import clean_data
-from fs_TFIDF import tfidf_matrix_features, _lemmatize_tokens_pos
+from model.data_processing import clean_data
+from model.fs_TFIDF import tfidf_matrix_features, _lemmatize_tokens_pos
 
 import pandas as pd
 import numpy as np
@@ -15,7 +15,7 @@ import pickle
 
 class RecCosineSimilarity(object):
 
-    def __init__(self, n_size):
+    def __init__(self, n_size=5):
         self.n_size = n_size
 
     def fit(self, vect, wine_mat):
@@ -45,7 +45,6 @@ class RecCosineSimilarity(object):
         '''
         Input:
             user_input - string description from user
-            vect - fitted vectorizer
         Output: rec_ids - numpy array of n_size with top cosine similar wines
         '''
         user_lem = _lemmatize_tokens_pos([user_input])
@@ -66,7 +65,7 @@ if __name__ == '__main__':
     vectorizer, wine_matrix, features = tfidf_matrix_features(X, stop_lib, stemlem=1)
 
 
-    n_recs = 10
+    n_recs = 5
     cs = RecCosineSimilarity(n_recs)
     cs.fit(vectorizer, wine_matrix)
     with open ('../static/cos_sim_model.pkl', 'wb') as f:
