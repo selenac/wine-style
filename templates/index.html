@@ -37,28 +37,31 @@
 				</header>
 				<p>Feel overwhelmed when selecting a wine to try? <br />
 				Let's <strong>discover</strong> something new <br />
-				based on a wine you've enjoyed before or describe the flavors you like. </p>
+				based on a selected bottle or describe the flavors you enjoy. </p>
 				<footer>
-					<a href="#bybottle" class="button style2 scrolly" style="margin-right: 30px">Bottle in mind</a>
-					<a href="#bydescription" class="button style2 scrolly" style="margin-left: 30px">Describe the flavors</a>
+					<a href="#bybottle" class="button style2 scrolly" style="margin-right: 30px">Choose A Bottle</a>
+					<a href="#bydescription" class="button style2 scrolly" style="margin-left: 30px">Describe Flavors</a>
 				</footer>
 			</section>
 
 		<!-- Feature 1 -->
 			<article id="bybottle" class="container box style1 right">
-				<a href="#" class="image fit"><img src="static/images/pic01.jpg" alt="" /></a>
-				<div class="inner">
 					<header>
-						<h2>Select from our<br />
-						wine library</h2>
+						<h2>Select from a sample<br />
+						of our wine library</h2>
 					</header>
-					<p>Insert drop down of wine library to select a wine to put in rec</p>
-					<a href="#recommendation" class="button style2 scrolly">Submit</a>
+					<select name=wines id=wines method="GET" action="/">
+						<option value="{{ wines[0] }}" selected>{{ wines[0] }}</option>
+						{% for wine in wines[1:] %}
+						<option value= "{{ wine }}">{{ wine }}</option>
+						{% endfor %}
+					</select>
+					<button id="bottle"  style="margin-left: 30px">Submit</button>
 				</div>
 			</article>
 
 		<!-- Feature 2 -->
-			<article id="bydescription" class="container box style1 left">
+			<article id="bydescription" class="container box style1 right">
 				<a href="#" class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
 				<div class="inner">
 					<header>
@@ -66,13 +69,13 @@
 						what you like</h2>
 					</header>
 					<p>Try something like: <br />
-						dark cherry notes and oaky blahness"</p>
-				<!--	<form action="/" method="POST" > -->
+						I enjoy wines with flavors of cherry, oak, and nuttiness<br />
+					</p>
 						<textarea id="user_input",
-											rows="2", cols="30"></textarea>
-						<button id="description"><a href="#recommendation">Submit</a></button>
-			<!--			<p><span>Your text: </span><span id="recommendations"></span> -->
-				<!-- </form> -->
+											rows="3", cols="30"></textarea>
+				<!--		<a href="#recommendation">  How to jump to rec sec -->
+						<button id="description">Submit</button>
+					<!--	</a>-->
 				</div>
 			</article>
 
@@ -82,16 +85,22 @@
 							<h2>Recommendations</h2>
 						</header>
 						<table id="table" border = '1'>
-							<tr>
-								<th>Name</th>
-								<th>Province</th>
-								<th>~Price</th>
-							</tr>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Province</th>
+									<th>~Price</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+								</tr>
+							</tbody>
 						</table>
 					</div>
 				</article>
 
-		<!-- Portfolio -->
+		<!-- Portfolio [Not in Use]-->
 <!--
 			<article id="rec" class="container box style2">
 				<header>
@@ -116,11 +125,12 @@
 			</article>
 	-->
 
-		<!-- Contact -->
+		<!-- Contact [ Not in Use] -->
+		<!--
 			<article class="container box style3">
 				<header>
-					<h2>Nisl sed ultricies</h2>
-					<p>Diam dignissim lectus eu ornare volutpat orci.</p>
+					<h2>Get in Touch</h2>
+					<p>Have questions or feedback on this project? I'd like to hear from you!</p>
 				</header>
 				<form method="post" action="#">
 					<div class="row 50%">
@@ -137,9 +147,9 @@
 					</div>
 				</form>
 			</article>
+		-->
 
-
-		<!-- Generic -->
+		<!-- Generic [HTML code block help] -->
 		<!--
 			<article class="container box style3">
 				<header>
@@ -297,6 +307,7 @@
 		-->
 
 		<section id="footer">
+			<!--
 			<ul class="icons">
 				<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
 				<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
@@ -305,9 +316,10 @@
 				<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
 				<li><a href="#" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
 			</ul>
+			-->
 			<div class="copyright">
 				<ul class="menu">
-					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					<li>Wine Style - A Data Science Project</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 				</ul>
 			</div>
 		</section>
@@ -328,13 +340,10 @@
 			  return $("textarea#user_input").val();
 			}
 
-			let write_recommendations = function(recommendations) {
-			  $("span#recommendations").text(recommendations);
-			}
-
 			let write_table = function(recommendations) {
 				var r = $.parseJSON(recommendations);
 				console.log(r)
+				$("#table tbody").detach();
 				var tr;
 				for (var i=0; i < 10; i++) {
 					tr = $('<tr>');
@@ -350,7 +359,7 @@
 			  $.ajax({
 			      url: "/predict",
 			      type: "POST",
-			      data: JSON.stringify({"user_input": user_input}),
+			      data: JSON.stringify({"user_input": [user_input, '2']}),
 			      contentType: "application/json",
 			      success: function(data) {
 								console.log(data.recommendations);
@@ -365,8 +374,31 @@
 			  });
 			});
 
-			</script>
+			let get_bottle = function() {
+				return $("select#wines").val();
+			}
 
+			let send_bottle = function() {
+				let user_input = get_bottle();
+				$.ajax({
+					url: "/predict",
+					type: "POST",
+					data: JSON.stringify({"user_input": [user_input, '1']}),
+					contentType: "application/json",
+					success: function(data) {
+						console.log(data.recommendations);
+						write_table(data.recommendations);
+					}
+				});
+			}
+
+			$(document).ready(function() {
+				$("button#bottle").click(function() {
+					send_bottle();
+				});
+			});
+
+			</script>
 
 
 	</body>
