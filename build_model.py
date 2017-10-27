@@ -8,10 +8,11 @@ with a similar taste description.
 from model.data_processing import clean_data
 from model.fs_TFIDF import tfidf_matrix_features, _lemmatize_tokens_pos
 
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-import pickle
+
 
 class RecCosineSimilarity(object):
 
