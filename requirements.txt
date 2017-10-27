@@ -15,3 +15,4 @@ scipy==0.19.1
 sklearn==0.0
 statsmodels==0.8.0
 unicodecsv==0.14.1
+gunicorn==19.7.1
