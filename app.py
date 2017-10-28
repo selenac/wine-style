@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import pickle
 import json
 import random
-import build_model 
+from build_model import RecCosineSimilarity
 
 app = Flask(__name__)
 
