@@ -13,7 +13,6 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 class RecCosineSimilarity(object):
 
     def __init__(self, n_size=5):
@@ -64,7 +63,6 @@ if __name__ == '__main__':
     X = wine_df['description']
     # Create TfidfVectorizer and Lemmatize tokens with WordNetLemmatizer + POS tagging
     vectorizer, wine_matrix, features = tfidf_matrix_features(X, stop_lib, stemlem=1)
-
 
     n_recs = 10
     cs = RecCosineSimilarity(n_recs)

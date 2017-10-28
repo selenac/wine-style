@@ -1,5 +1,5 @@
 stopwords
-pos_tag
 wordnet
 porter
 snowball
+tag
