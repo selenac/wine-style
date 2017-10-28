@@ -55,19 +55,19 @@ class RecCosineSimilarity(object):
         return rec_ids
 
 if __name__ == '__main__':
-    filepath = '../../data/sample.csv' # sample dataset for build-testing
+    filepath = '../data/sample.csv' # sample dataset for build-testing
     # filepath = '../../data/all_wine_data.csv' # full dataset
 
     wine_df, stop_lib = clean_data(filepath)
-    wine_df.to_pickle('../static/wine_df.pkl') # lookup for wine_id and product list
+    wine_df.to_pickle('static/wine_df.pkl') # lookup for wine_id and product list
 
     X = wine_df['description']
     # Create TfidfVectorizer and Lemmatize tokens with WordNetLemmatizer + POS tagging
     vectorizer, wine_matrix, features = tfidf_matrix_features(X, stop_lib, stemlem=1)
 
 
-    n_recs = 5
+    n_recs = 10
     cs = RecCosineSimilarity(n_recs)
     cs.fit(vectorizer, wine_matrix)
-    with open ('../static/cos_sim_model.pkl', 'wb') as f:
+    with open ('static/cos_sim_model.pkl', 'wb') as f:
         pickle.dump(cs, f)
