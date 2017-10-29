@@ -12,7 +12,6 @@
 		<!--[if lte IE 8]><script src="static/assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="static/assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="static/assets/css/ie8.css" /><![endif]-->
-
 		<script type="text/javascript"
 	          src="{{ url_for('static', filename='jjquery.js') }}">
 	  </script>
@@ -26,21 +25,18 @@
 					<p>offering suggestions that fit your taste</p>
 				</header>
 				<footer>
-					<a href="#banner" class="button style2 scrolly-middle">Give it a try!</a>
+					<a href="#bybottle" class="button style2 scrolly" style="margin-right: 15px">Choose A Bottle</a>
+					<a href="#bydescription" class="button style2 scrolly" style="margin-left: 15px">Describe Flavors</a>
 				</footer>
 			</section>
 
-		<!-- Banner -->
+			<!-- Banner -->
 			<section id="banner">
 				<header>
-					<h2>A New Way to Discover</h2>
+					<h2></h2>
 				</header>
-				<p>Feel overwhelmed when selecting a wine to try? <br />
-				Let's <strong>discover</strong> something new <br />
-				based on a selected bottle or describe the flavors you enjoy. </p>
+				<p></p>
 				<footer>
-					<a href="#bybottle" class="button style2 scrolly" style="margin-right: 30px">Choose A Bottle</a>
-					<a href="#bydescription" class="button style2 scrolly" style="margin-left: 30px">Describe Flavors</a>
 				</footer>
 			</section>
 
@@ -99,6 +95,8 @@
 					</table>
 				</div>
 			</article>
+
+
 
 		<!-- Portfolio [Not in Use]-->
 <!--
@@ -345,7 +343,7 @@
 				console.log(r)
 				$("#table tbody").detach();
 				var tr;
-				for (var i=0; i < 10; i++) {
+				for (var i=0; i < 5; i++) {
 					tr = $('<tr>');
 					tr.append("<td>" + r[i].name + "</td>");
 					tr.append("<td>" + r[i].province + "</td>");
@@ -372,6 +370,11 @@
 			  $("button#description").click(function() {
 			    send_description();
 			  });
+				$("button#description").click(function() {
+					$('html, body').animate({
+				scrollTop: $("#recommendation").offset().top - 100
+					});
+				});
 			});
 
 			let get_bottle = function() {
@@ -395,6 +398,11 @@
 			$(document).ready(function() {
 				$("button#bottle").click(function() {
 					send_bottle();
+				});
+				$("button#bottle").click(function() {
+					$('html, body').animate({
+    		scrollTop: $("#recommendation").offset().top - 100
+					});
 				});
 			});
 

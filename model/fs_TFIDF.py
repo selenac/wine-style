@@ -94,7 +94,7 @@ def _snowball_stem_tokens(descriptions):
 
 ''' Vectorizer '''
 
-def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
+def get_tfidf(desc, wine_stop_words, stemlem=0):
     '''
     Input:
         desc: tokenized descriptions
@@ -109,7 +109,6 @@ def get_tfidf(desc, wine_stop_words, stemlem=0, max_features=1000):
                             strip_accents = 'unicode',
                             max_df = 0.99,
                             min_df = 0.01,
-                            #ngram_range = (1,2),
                             lowercase = True)
     if stemlem==1:
         # desc = _lemmatize_tokens(desc)

@@ -1,4 +1,4 @@
-from data_processing import clean_data
+from data_processing import clean_data, agg_description
 from fs_TFIDF import _lemmatize_tokens
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -87,11 +87,15 @@ def fit_LDA(X, num_topics=9, passes=25):
 if __name__ == '__main__':
     filepath = '../../data/sample.csv'
     wine_df, wine_stop_lib = clean_data(filepath)
+    # descriptions = wine_df['description']
 
-    documents = get_corpus(wine_df['description'])
+    agg_df, groups = agg_description(wine_df)
+    descriptions = agg_df.values
+
+    documents = get_corpus(descriptions)
     vect, cv_docs, vocab = get_countvect(documents, wine_stop_lib)
 
-    lda = fit_LDA(X=cv_docs, num_topics=9, passes=50)
+    lda = fit_LDA(X=cv_docs, num_topics=9, passes=100)
     display_topics(model=lda, feature=vocab, n_words=10)
     lda_map = lda.fit_transform(cv_docs) #returns numpy array map of (wine x topics)
 
