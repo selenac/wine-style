@@ -24,8 +24,8 @@ def agg_description(df):
         groups: dictionary with indices result from group
     '''
     # dictionary with index, use .tolist() to extract
-    groups = df.groupby(['variety', 'winery']).groups
-    agg_df = df.groupby(['variety', 'winery'])['description'].apply(lambda x: '; '.join(x))
+    groups = df.groupby(['winery', 'variety']).groups
+    agg_df = df.groupby(['winery', 'variety'])['description'].apply(lambda x: '; '.join(x))
     agg_df.reset_index()
     return agg_df, groups
 
@@ -35,7 +35,8 @@ def _create_product_col(df):
     '''
     Create wine product column with name
     '''
-    df['product'] = df['winery'] + ' ' + df['designation'].fillna('') + ' ' + df['variety']
+    # df['product'] = df['winery'] + ' ' + df['designation'].fillna('') + ' ' + df['variety']
+    df['product'] = df['winery'] + ' ' + df['variety']
     return df
 
 #TODO split words in varietal
@@ -55,7 +56,9 @@ def _create_wine_stop(df):
                      'flavor', 'fine', 'sense', 'note', 'notes', 'frame', 'alcohol',
                      'yet', 'seem', 'bottle', 'flavor', 'show', 'good', 'cabernet',
                      'year', 'winemaker', 'verdot', 'noir', 'blanc', 'grigio',
-                     'gris', 'taste', 'blend', 'pinot', 'cab', 'franc', 'nose']
+                     'gris', 'taste', 'blend', 'pinot', 'cab', 'franc', 'nose',
+                     'vineyard', 'flavors', 'one', 'two', 'three', 'four', 'five',
+                     'six', 'seven', 'eight', 'nine', 'ten', 'shows']
     return stopwords.words('english') + wine_stop_lib + _create_variety_list(df)
 
 if __name__ == '__main__':

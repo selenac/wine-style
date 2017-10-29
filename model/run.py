@@ -8,11 +8,11 @@ filepath = '../../data/sample.csv' # sample dataset for build-testing
 
 '''Regular clean_data'''
 wine_df, wine_stop_lib = clean_data(filepath)
-descriptions = wine_df['description']
+# descriptions = wine_df['description']
 
 # Aggregate Descriptions
-# agg_df, groups = agg_description(wine_df)
-# descriptions = agg_df.values
+agg_df, groups = agg_description(wine_df)
+descriptions = agg_df.values
 
 #TFIDF (Regular Tokens)
 # tfidf_docs, features = tfidf_matrix_features(descriptions, wine_stop_lib)
@@ -58,13 +58,15 @@ def make_rec_from_user(vect, tfidf_docs, n_size=5):
 
 #make_rec_from_user(vect, tfidf_docs)
 
-'''
+
 #Recommendation for Aggregate Descriptions
 group_id = 500 # Want recommendations similar to this group ID
 
 cs = RecCosineSimilarity(n_size=5)
-cs.fit(tfidf_docs)
+cs.fit(vect, tfidf_docs)
 test_one = cs.recommend_to_one(wine_id = group_id)
+
+top_feats, top_idx = find_top_features_per_wine(features, tfidf_docs, n_features=5)
 
 print "Wine I like: {}".format(agg_df.index[group_id])
 print "Recommendations: "
@@ -77,6 +79,5 @@ for n, idx in enumerate(test_one):
         print "   {}".format(wine_df['product'][i])
         #print "   {}".format(wine_df.values[i])
 # LDA
-cv_docs, features, lda = latentdirichletallocation(descriptions, wine_stop_lib, num_topics=9, passes=20)
-lda_map = lda.fit_transform(cv_docs) # document by topic matrix
-'''
+# cv_docs, features, lda = latentdirichletallocation(descriptions, wine_stop_lib, num_topics=9, passes=20)
+# lda_map = lda.fit_transform(cv_docs) # document by topic matrix

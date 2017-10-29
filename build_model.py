@@ -54,8 +54,8 @@ class RecCosineSimilarity(object):
         return rec_ids
 
 if __name__ == '__main__':
-    filepath = '../data/sample.csv' # sample dataset for build-testing
-    # filepath = '../../data/all_wine_data.csv' # full dataset
+    #filepath = '../data/sample.csv' # sample dataset for build-testing
+    filepath = '../../data/all_wine_data.csv' # full dataset
 
     wine_df, stop_lib = clean_data(filepath)
     wine_df.to_pickle('static/wine_df.pkl') # lookup for wine_id and product list
