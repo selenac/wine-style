@@ -10,10 +10,6 @@ len(json_files)
 columns = ['country', 'description', 'designation', 'points', 'price', 'province', 'region_1', 'region_2', 'url', 'variety', 'winery']
 wine_df = pd.DataFrame(columns=columns)
 
-# df = pd.read_json('data/winemag-data_1507444130.48.json')
-# df.head()
-# wine_df = wine_df.append(df, ignore_index=True)
-
 for index, js in enumerate(json_files):
     with open(os.path.join(path_to_json, js)) as json_file:
         #step_json = json_file.readlines()

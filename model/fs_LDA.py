@@ -1,3 +1,5 @@
+'''
+'''
 from data_processing import clean_data, agg_description
 from fs_TFIDF import _lemmatize_tokens
 from sklearn.feature_extraction.text import CountVectorizer
@@ -45,11 +47,9 @@ def get_countvect(desc, wine_stop_words, stemlem=0):
     vect = CountVectorizer(stop_words = wine_stop_words,
                            analyzer='word',
                            decode_error = 'ignore',
-                           #strip_accents = 'unicode',
                            lowercase = True,
                            max_df = 0.99,
                            min_df = 0.01,
-                           #ngram_range = (1,2,
                            )
     if stemlem == 1:
         desc = _lemmatize_tokens(desc)

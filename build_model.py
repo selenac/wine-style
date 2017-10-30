@@ -7,7 +7,6 @@ with a similar taste description.
 
 from model.data_processing import clean_data
 from model.fs_TFIDF import tfidf_matrix_features, _lemmatize_tokens_pos
-
 import pickle
 import pandas as pd
 import numpy as np
@@ -43,8 +42,7 @@ class RecCosineSimilarity(object):
 
     def recommend_user_input(self, user_input):
         '''
-        Input:
-            user_input - string description from user
+        Input: user_input - string description from user
         Output: rec_ids - numpy array of n_size with top cosine similar wines
         '''
         user_lem = _lemmatize_tokens_pos([user_input])
@@ -54,11 +52,12 @@ class RecCosineSimilarity(object):
         return rec_ids
 
 if __name__ == '__main__':
-    #filepath = '../data/sample.csv' # sample dataset for build-testing
-    filepath = '../../data/all_wine_data.csv' # full dataset
+    '''do not pickle from here. use sep build pickle file'''
+    filepath = '../data/sample.csv' # sample dataset for build-testing
+    # filepath = '../../data/all_wine_data.csv' # full dataset
 
     wine_df, stop_lib = clean_data(filepath)
-    wine_df.to_pickle('static/wine_df.pkl') # lookup for wine_id and product list
+    # wine_df.to_pickle('static/wine_df.pkl') # lookup for wine_id and product list
 
     X = wine_df['description']
     # Create TfidfVectorizer and Lemmatize tokens with WordNetLemmatizer + POS tagging
@@ -67,5 +66,5 @@ if __name__ == '__main__':
     n_recs = 10
     cs = RecCosineSimilarity(n_recs)
     cs.fit(vectorizer, wine_matrix)
-    with open ('static/cos_sim_model.pkl', 'wb') as f:
-        pickle.dump(cs, f)
+    # with open ('static/cos_sim_model.pkl', 'wb') as f:
+        # pickle.dump(cs, f)

@@ -1,3 +1,7 @@
+'''
+Test run.py for training and testing of recommendations
+'''
+
 from data_processing import clean_data, agg_description
 from fs_TFIDF import tfidf_matrix_features, find_top_features_per_wine
 from fs_LDA import latentdirichletallocation
@@ -57,7 +61,6 @@ def make_rec_from_user(vect, tfidf_docs, n_size=5):
         print "    {}, ${}0".format(wine_df['country'][idx], wine_df['price'][idx])
 
 #make_rec_from_user(vect, tfidf_docs)
-
 
 #Recommendation for Aggregate Descriptions
 group_id = 500 # Want recommendations similar to this group ID

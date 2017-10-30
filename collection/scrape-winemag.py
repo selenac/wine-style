@@ -1,3 +1,7 @@
+'''
+SOURCE: Kaggle Wine Reviews by Zack Thoutt
+'''
+
 from bs4 import BeautifulSoup
 from multiprocessing.dummy import Pool
 import os
@@ -274,23 +278,6 @@ class ReviewFormatException(Exception):
 
 if __name__ == '__main__':
     # Total review results on their site are conflicting, hardcode as the max tested value for now
-    '''
-    done:
-    20171007:
-        (10, 15) - del
-        (1,9) - del
-        (16, 50)
-        (51,100)
-        (101, 110)
-        (1, 15)
-    20171008:
-        (111,1000) .... 26442/26670 reviews scraped - manual combine
-    20171009:
-        (992, 1500) .... (992, +99) scraped (3420/15240 - manual combine
-        (1091, 1200)
-    20171013:
-        (1200, 1800) .... 2791
-    '''
     num_pages_to_scrape = (1200, 1800)
     winmag_scraper = Scraper(pages_to_scrape=num_pages_to_scrape, num_jobs=10, clear_old_data=False)
     winmag_scraper.scrape_site()

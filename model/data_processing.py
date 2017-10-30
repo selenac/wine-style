@@ -14,21 +14,6 @@ def clean_data(filepath):
     wine_stop_library = _create_wine_stop(wine_df)
     return wine_df, wine_stop_library
 
-def agg_description(df):
-    '''
-    Concatenate the descriptions based on winery and variety.
-    Input: Dataframe
-    Output:
-        agg_df: New dataframe with columns
-            variety", "winery", "description" aggregated descriptions
-        groups: dictionary with indices result from group
-    '''
-    # dictionary with index, use .tolist() to extract
-    groups = df.groupby(['winery', 'variety']).groups
-    agg_df = df.groupby(['winery', 'variety'])['description'].apply(lambda x: '; '.join(x))
-    agg_df.reset_index()
-    return agg_df, groups
-
 #########################################################
 
 def _create_product_col(df):
@@ -39,7 +24,6 @@ def _create_product_col(df):
     df['product'] = df['winery'] + ' ' + df['variety']
     return df
 
-#TODO split words in varietal
 def _create_variety_list(df):
     '''
     Output: Unique variety list
@@ -60,6 +44,21 @@ def _create_wine_stop(df):
                      'vineyard', 'flavors', 'one', 'two', 'three', 'four', 'five',
                      'six', 'seven', 'eight', 'nine', 'ten', 'shows']
     return stopwords.words('english') + wine_stop_lib + _create_variety_list(df)
+
+def agg_description(df):
+    '''
+    Concatenate the descriptions based on winery and variety.
+    Input: Dataframe
+    Output:
+        agg_df: New dataframe with columns
+            variety", "winery", "description" aggregated descriptions
+        groups: dictionary with indices result from group
+    '''
+    # dictionary with index, use .tolist() to extract
+    groups = df.groupby(['winery', 'variety']).groups
+    agg_df = df.groupby(['winery', 'variety'])['description'].apply(lambda x: '; '.join(x))
+    agg_df.reset_index()
+    return agg_df, groups
 
 if __name__ == '__main__':
     filepath = '../data/sample.csv'

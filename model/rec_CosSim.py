@@ -1,3 +1,6 @@
+'''
+Same class as build_model.py
+'''
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from fs_TFIDF import _lemmatize_tokens_pos

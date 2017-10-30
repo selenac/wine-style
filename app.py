@@ -26,8 +26,10 @@ def predict():
     data = str(user_input[0])
     rec_type = user_input[1]
     if rec_type=='1':
+        #by bottle recommendation
         rec_ids = model.recommend_to_one(int(data))
     elif rec_type=='2':
+        #by description input recommendation
         rec_ids = model.recommend_user_input(data)
     wineList = []
     for r in rec_ids:

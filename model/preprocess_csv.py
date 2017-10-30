@@ -1,5 +1,3 @@
-import pandas as pd
-
 '''
 Used this to merge kaggle data with additional scraped data
 from same winemag.com source. This merge helps preserve the
@@ -7,6 +5,8 @@ utf8 enoding.
 
 Creates all_wine_data with ~128k unique wine reviews
 '''
+
+import pandas as pd
 
 original_data = '../../data/winemag-data_first150k.csv'
 scrape_data = '../../data/scraped_38k.csv'
