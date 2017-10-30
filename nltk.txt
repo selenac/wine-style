@@ -1,3 +1,5 @@
 stopwords
 wordnet
+porter
+snowball
 tag
