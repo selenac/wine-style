@@ -43,5 +43,5 @@ def predict():
     return jsonify({'recommendations': recs})
 
 if __name__ == '__main__':
-    pass
-    # app.run(host='0.0.0.0')
+    # pass
+    app.run(host='0.0.0.0', debug = True)

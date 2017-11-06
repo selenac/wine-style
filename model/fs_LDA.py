@@ -1,4 +1,5 @@
 '''
+This is a work in progress and not in the current model.
 '''
 from data_processing import clean_data, agg_description
 from fs_TFIDF import _lemmatize_tokens
